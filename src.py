@@ -19,13 +19,13 @@ def index():
 
 @app.route('/upload', methods=['POST','GET'])
 def upload():
-	received = request
-	img = None
-	if received.files:
-		print(received.files['imageFile'])
-		file  = received.files['imageFile']
-		nparr = np.fromstring(file.read(), np.uint8)
-		img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    received = request
+    img = None
+    if received.files:
+        print(received.files['imageFile'])
+        file  = received.files['imageFile']
+        nparr = np.fromstring(file.read(), np.uint8)
+        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
         try:
             os.remove(fileName)
         except:
@@ -33,9 +33,9 @@ def upload():
         cv2.imwrite(fileName, img)	
         text = pytesseract.image_to_string(Image.open(fileName))[0:-2]
         print(text)
-		return "[SUCCESS] Image Received", 201
-	else:
-		return "[FAILED] Image Not Received", 204
+        return "[SUCCESS] Image Received", 201
+    else:
+        return "[FAILED] Image Not Received", 204
 
 
 # change the ip address to your pc ip address
