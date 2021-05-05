@@ -11,26 +11,31 @@ app = Flask(__name__)
 
 fileName = "image.jpg"
 
-# change the "/api/test" to the end point that you want to send the request to
-@app.route('/api/test', methods=['POST'])
-def test():
-    r = request
-    nparr = np.frombuffer(r.data, np.uint8)
-    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-
-    try:
-        os.remove(fileName)
-    except:
-        pass
-
-    cv2.imwrite(fileName, img)
-
-    text = pytesseract.image_to_string(Image.open(fileName))[0:-2]
+@app.route('/')
+@app.route('/index', methods=['GET'])
+def index():
+	return "ESP32-CAM Flask Server", 200
 
 
-    print(text)
-
-    return Response(response="hi", status=200)
+@app.route('/upload', methods=['POST','GET'])
+def upload():
+	received = request
+	img = None
+	if received.files:
+		print(received.files['imageFile'])
+		file  = received.files['imageFile']
+		nparr = np.fromstring(file.read(), np.uint8)
+		img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        try:
+            os.remove(fileName)
+        except:
+            pass
+        cv2.imwrite(fileName, img)	
+        text = pytesseract.image_to_string(Image.open(fileName))[0:-2]
+        print(text)
+		return "[SUCCESS] Image Received", 201
+	else:
+		return "[FAILED] Image Not Received", 204
 
 
 # change the ip address to your pc ip address
